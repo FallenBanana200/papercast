@@ -52,9 +52,35 @@ public class GtfsReader {
         return List.of();
     }
 
-    public List<Route> readRoutes() {
-        // ...
-        return List.of();
+    public List<Route> readRoutes() throws IOException {
+        List<Route> routes = new ArrayList<>();
+
+        InputStream inputStream = getClass()
+                .getClassLoader()
+                .getResourceAsStream("gtfs/routes.txt");
+
+        if (inputStream == null) {
+            throw new IOException("routes.txt not found");
+        }
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(inputStream))) {
+
+            String line;
+
+            reader.readLine();
+
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+
+                int routeId = Integer.parseInt(fields[0]);
+                String routeShortName = fields[2];
+
+                routes.add(new Route(routeId, routeShortName));
+            }
+        }
+
+        return routes;
     }
 
     public List<Calendar> readCalendars() {
