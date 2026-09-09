@@ -43,13 +43,39 @@ public class GtfsReader {
     }
 
     public List<StopTime> readStopTimesForStop(int stopId) {
-        // prebere samo relevantne vrstice
         return List.of();
     }
 
-    public List<Trip> readTrips() {
-        // ...
-        return List.of();
+    public List<Trip> readTrips() throws IOException {
+        List<Trip> trips = new ArrayList<>();
+
+        InputStream inputStream = getClass()
+                .getClassLoader()
+                .getResourceAsStream("gtfs/trips.txt");
+
+        if (inputStream == null) {
+            throw new IOException("trips.txt not found");
+        }
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(inputStream))) {
+
+            String line;
+
+            reader.readLine();
+
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+
+                int routeId = Integer.parseInt(fields[0]);
+                int serviceId = Integer.parseInt(fields[1]);
+                String tripId = fields[2];
+
+                trips.add(new Trip(routeId, serviceId, tripId));
+            }
+        }
+
+        return trips;
     }
 
     public List<Route> readRoutes() throws IOException {
