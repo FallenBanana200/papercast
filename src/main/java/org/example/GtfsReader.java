@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,8 +111,57 @@ public class GtfsReader {
         return routes;
     }
 
-    public List<Calendar> readCalendars() {
-        // ...
-        return List.of();
+    public List<Calendar> readCalendars() throws IOException {
+        List<Calendar> calendars = new ArrayList<>();
+
+        InputStream inputStream = getClass()
+                .getClassLoader()
+                .getResourceAsStream("gtfs/calendar.txt");
+
+        if (inputStream == null) {
+            throw new IOException("calendar.txt not found");
+        }
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(inputStream))) {
+
+            String line;
+
+            reader.readLine();
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+
+                int serviceId = Integer.parseInt(fields[0]);
+
+                boolean monday = fields[1].equals("1");
+                boolean tuesday = fields[2].equals("1");
+                boolean wednesday = fields[3].equals("1");
+                boolean thursday = fields[4].equals("1");
+                boolean friday = fields[5].equals("1");
+                boolean saturday = fields[6].equals("1");
+                boolean sunday = fields[7].equals("1");
+
+                LocalDate startDate = LocalDate.parse(fields[8], formatter);
+                LocalDate endDate = LocalDate.parse(fields[9], formatter);
+
+                calendars.add(new Calendar(
+                        serviceId,
+                        monday,
+                        tuesday,
+                        wednesday,
+                        thursday,
+                        friday,
+                        saturday,
+                        sunday,
+                        startDate,
+                        endDate
+                ));
+            }
+        }
+
+        return calendars;
     }
 }
