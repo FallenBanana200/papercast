@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.example.model.*;
 
-
 public class GtfsReader {
     public List<Stop> readStops() throws IOException {
         List<Stop> stops = new ArrayList<>();
@@ -44,8 +43,49 @@ public class GtfsReader {
         return stops;
     }
 
-    public List<StopTime> readStopTimesForStop(int stopId) {
-        return List.of();
+    public List<StopTime> readStopTimesForStop(int stopId) throws IOException {
+        List<StopTime> stopTimes = new ArrayList<>();
+
+        InputStream inputStream = getClass()
+                .getClassLoader()
+                .getResourceAsStream("gtfs/stop_times.txt");
+
+        if (inputStream == null) {
+            throw new IOException("stop_times.txt not found");
+        }
+
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(inputStream))) {
+
+            String line;
+
+            reader.readLine();
+
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+
+                int currentStopId = Integer.parseInt(fields[3]);
+
+                if (currentStopId != stopId) {
+                    continue;
+                }
+
+                String tripId = fields[0];
+                String arrivalTime = fields[1];
+                int stopSequence = Integer.parseInt(fields[4]);
+
+                stopTimes.add(
+                        new StopTime(
+                                tripId,
+                                arrivalTime,
+                                currentStopId,
+                                stopSequence
+                        )
+                );
+            }
+        }
+
+        return stopTimes;
     }
 
     public List<Trip> readTrips() throws IOException {
