@@ -3,6 +3,7 @@ package org.example;
 import org.example.model.*;
 import org.example.reader.GtfsReader;
 import org.example.service.BusService;
+import java.time.Clock;
 
 import java.io.IOException;
 import java.util.List;
@@ -35,7 +36,8 @@ public class App {
                     stopTimes,
                     trips,
                     routes,
-                    calendars
+                    calendars,
+                    Clock.systemDefaultZone()
             );
 
             Stop stop = busService.findStopById(stationId);

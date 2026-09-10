@@ -3,6 +3,7 @@ package org.example.service;
 import org.example.model.*;
 import org.example.model.Calendar;
 
+import java.time.Clock;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -13,19 +14,23 @@ public class BusService {
     private List<Trip> trips;
     private List<Route> routes;
     private List<Calendar> calendars;
+    private Clock clock;
 
     public BusService(
             List<Stop> stops,
             List<StopTime> stopTimes,
             List<Trip> trips,
             List<Route> routes,
-            List<Calendar> calendars) {
+            List<Calendar> calendars,
+            Clock clock)
+    {
 
         this.stops = stops;
         this.stopTimes = stopTimes;
         this.trips = trips;
         this.routes = routes;
         this.calendars = calendars;
+        this.clock = clock;
     }
 
     public Stop findStopById(int stationId) {
@@ -78,7 +83,7 @@ public class BusService {
     }
 
     private int getCurrentTimeInSeconds() {
-        LocalTime now = LocalTime.now();
+        LocalTime now = LocalTime.now(clock);
 
         int hours = now.getHour();
         int minutes = now.getMinute();
